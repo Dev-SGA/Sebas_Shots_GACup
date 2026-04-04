@@ -261,7 +261,7 @@ with col_left:
             except Exception:
                 st.error(f"Video file not found: {selected_event['video']}")
         else:
-            st.warning("Não há vídeo carregado para este evento.")
+            st.warning("No video.")
 
 # ==========================
 # Right column: details + goal view
@@ -278,7 +278,7 @@ with col_right:
         st.subheader("Shot Placement (Goal View)")
 
         if pd.isna(selected_event.get("goal_x")) or pd.isna(selected_event.get("goal_y")):
-            st.warning("Este evento não possui coordenadas do gol (goal_x/goal_y).")
+            st.warning("Out of goal")
 
         goal_fig = draw_goal(selected_event)
         st.pyplot(goal_fig, clear_figure=True)
