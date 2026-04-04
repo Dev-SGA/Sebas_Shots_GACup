@@ -28,20 +28,20 @@ GOAL_HEIGHT = 2.44
 # ==========================
 matches_data = {
     "Vs Los Angeles": [
-        ("A gol", 117.35, 26.20, 0.12, 0.35, 0.12, "videos/4 - LA.mp4"),
-        ("A gol", 108.87, 48.81, 0.10, 2.34, 0.55, "videos/1 - LA.mp4"),
-        ("block", 104.22, 26.87, 0.06, None, None, "videos/2 - LA.mp4"),
-        ("block", 98.23, 22.88, 0.05, None, None, "videos/3 - LA.mp4"),
-        ("Fora", 113.19, 43.82, 0.08, None, None, "videos/5 - LA.mp4"),
+        ("On Target", 117.35, 26.20, 0.12, 0.35, 0.12, "videos/4 - LA.mp4"),
+        ("On Target", 108.87, 48.81, 0.10, 2.34, 0.55, "videos/1 - LA.mp4"),
+        ("Blocked", 104.22, 26.87, 0.06, None, None, "videos/2 - LA.mp4"),
+        ("Blocked", 98.23, 22.88, 0.05, None, None, "videos/3 - LA.mp4"),
+        ("Off Target", 113.19, 43.82, 0.08, None, None, "videos/5 - LA.mp4"),
     ],
     "Vs Slavia Praha": [
-        ("FORA", 108.04, 35.68, 0.09, None, None, "videos/1 - SP.mp4"),
-        ("FORA", 96.07, 7.09, 0.04, None, None, "videos/2 - SP.mp4"),
+        ("Off Target", 108.04, 35.68, 0.09, None, None, "videos/1 - SP.mp4"),
+        ("Off Target", 96.07, 7.09, 0.04, None, None, "videos/2 - SP.mp4"),
     ],
     "Vs Sockers": [
-        ("Trave", 104.05, 56.79, 0.20, -0.00, 0.14, "videos/1 - SK.mp4"),
-        ("A gol", 109.70, 41.83, 0.14, 4.40, 0.50, "videos/3 - SK.mp4"),
-        ("Gol", 112.36, 46.32, 0.33, 1.03, 0.15, "videos/2 GOL - SK.mp4"),
+        ("Post", 104.05, 56.79, 0.20, -0.00, 0.14, "videos/1 - SK.mp4"),
+        ("On Target", 109.70, 41.83, 0.14, 4.40, 0.50, "videos/3 - SK.mp4"),
+        ("Goal", 112.36, 46.32, 0.33, 1.03, 0.15, "videos/2 GOL - SK.mp4"),
     ],
 }
 
@@ -54,7 +54,7 @@ for match_name, events in matches_data.items():
     )
 
 df_all = pd.concat(dfs_by_match.values(), ignore_index=True)
-full_data = {"All shots": df_all}
+full_data = {"All Shots": df_all}
 full_data.update(dfs_by_match)
 
 # ==========================
@@ -64,15 +64,15 @@ def get_style(result_type: str, has_video: bool):
     t = (result_type or "").strip().upper()
     alpha = 0.95 if has_video else 0.85
 
-    if t == "GOL":
+    if t == "GOAL":
         return "*", (239/255, 71/255, 111/255, alpha), 1.5
-    if t in ("A GOL", "NO ALVO"):
+    if t in ("ON TARGET",):
         return "h", (6/255, 214/255, 160/255, alpha), 1.5
-    if t == "FORA":
+    if t == "OFF TARGET":
         return "o", (255/255, 209/255, 102/255, alpha), 1.5
-    if t in ("BLOQUEADO", "BLOCK"):
+    if t in ("BLOCKED",):
         return "s", (17/255, 138/255, 178/255, alpha), 1.5
-    if t == "TRAVE":
+    if t == "POST":
         return "D", (1, 1, 1, alpha), 1.5
 
     return "o", (0.6, 0.6, 0.6, alpha), 1.2
@@ -116,15 +116,15 @@ def draw_goal(selected_event: pd.Series | None):
 
         if pd.notna(gx) and pd.notna(gy):
             t = (selected_event.get("type") or "").strip().upper()
-            if t == "GOL":
+            if t == "GOAL":
                 c, m = "#EF476F", "*"
-            elif t in ("A GOL", "NO ALVO"):
+            elif t == "ON TARGET":
                 c, m = "#06D6A0", "h"
-            elif t == "FORA":
+            elif t == "OFF TARGET":
                 c, m = "#FFD166", "o"
-            elif t in ("BLOQUEADO", "BLOCK"):
+            elif t == "BLOCKED":
                 c, m = "#118AB2", "s"
-            elif t == "TRAVE":
+            elif t == "POST":
                 c, m = "#FFFFFF", "D"
             else:
                 c, m = "#999999", "o"
@@ -186,15 +186,15 @@ with col_left:
         )
 
     legend_elements = [
-        Line2D([0], [0], marker='*', color='none', label='Gol',
+        Line2D([0], [0], marker='*', color='none', label='Goal',
                markerfacecolor="#EF476F", markeredgecolor="#ffffff", markersize=11),
-        Line2D([0], [0], marker='h', color='none', label='A gol / No alvo',
+        Line2D([0], [0], marker='h', color='none', label='On Target',
                markerfacecolor="#06D6A0", markeredgecolor="#ffffff", markersize=9),
-        Line2D([0], [0], marker='o', color='none', label='Fora',
+        Line2D([0], [0], marker='o', color='none', label='Off Target',
                markerfacecolor="#FFD166", markeredgecolor="#ffffff", markersize=9),
-        Line2D([0], [0], marker='s', color='none', label='Bloqueado',
+        Line2D([0], [0], marker='s', color='none', label='Blocked',
                markerfacecolor="#118AB2", markeredgecolor="#ffffff", markersize=9),
-        Line2D([0], [0], marker='D', color='none', label='Trave',
+        Line2D([0], [0], marker='D', color='none', label='Post',
                markerfacecolor="#FFFFFF", markeredgecolor="#ffffff", markersize=8),
     ]
     legend = ax.legend(
